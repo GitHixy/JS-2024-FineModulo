@@ -2,3 +2,37 @@ form {
     width: 30%;
     margin: auto;
 }
+.cardElement {
+    width: 20%;
+    max-width: 300px;
+}
+.cardElement:hover {
+    transform: scale(1.02);
+}
+.card-img-top {
+    max-height: 130px;
+    object-fit: contain;
+    cursor: pointer;
+}
+#itemList {
+    gap: 1px;
+}
+.card button {
+    background-color: #000;
+    width: 70px;
+    font-size: 12px;
+}
+#addProductBtn {
+    background-color: #000;
+    border: 1px solid white;
+}
+#addProductBtn:hover {
+    background-color: #fff;
+    border: 1px solid black;
+    color: #000;
+    font-weight: bold;
+}
+.card h5, .card h6 {
+    cursor: pointer;
+    font-size: 17px;
+} 

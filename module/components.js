@@ -1,4 +1,7 @@
-import { accessToken, URL } from './main.js';
+import { createAndAppendElement, handleFormSubmit } from './helper.js';
+
+const formContainer = document.getElementById('formContainer');
+const addProductBtn = document.getElementById('addProductBtn');
 
 export const createNavbar = () => {
     const navbar = document.createElement('nav');
@@ -19,27 +22,11 @@ export const createNavbar = () => {
 };
 createNavbar();
 
-document.addEventListener('DOMContentLoaded', function() {
-    const formContainer = document.getElementById('formContainer');
-    const addProductBtn = document.getElementById('addProductBtn');
-
-    const createAndAppendElement = (parent, elementType, attributes, textContent) => {
-        const element = document.createElement(elementType);
-        for (const key in attributes) {
-            element.setAttribute(key, attributes[key]);
-        }
-        if (textContent) {
-            element.textContent = textContent;
-        }
-        parent.appendChild(element);
-        return element;
-    };
-
-    const createForm = () => {
+const createForm = () => {
         const form = createAndAppendElement(formContainer, 'form', {'id': 'productForm'});
 
         const createFormGroup = (labelText, inputType, inputId, placeholder, isTextArea = false) => {
-            const div = createAndAppendElement(form, 'div', { 'class': 'mb-3' });
+            const div = createAndAppendElement(form, 'div', { 'class': 'mb-2' });
             createAndAppendElement(div, 'label', { 'for': inputId, 'class': 'form-label' }, labelText);
             if (isTextArea) {
                 createAndAppendElement(div, 'textarea', { 'class': 'form-control', 'id': inputId, 'placeholder': placeholder });
@@ -54,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
         createFormGroup('Image URL:', 'text', 'productImageUrl', 'Enter image URL');
         createFormGroup('Price ($):', 'number', 'productPrice', '0.00');
 
-        createAndAppendElement(form, 'button', { 'type': 'submit', 'class': 'btn btn-success' }, 'Submit');
+        createAndAppendElement(form, 'button', { 'type': 'submit', 'class': 'btn btn-success mb-5' }, 'Submit');
 
         form.style.display = 'none'; 
     };
@@ -63,49 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const form = formContainer.querySelector('form');
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     });
-    createForm();
-    const handleFormSubmit = async (event) => {
-        event.preventDefault(); 
 
-        
-        const formData = new FormData(event.target);
-        const productData = {
-            name: document.getElementById('productName').value,
-            description: document.getElementById('productDescription').value,
-            brand: document.getElementById('productBrand').value,
-            imageUrl: document.getElementById('productImageUrl').value,
-            price: document.getElementById('productPrice').value
-        };
-        productData.price = parseFloat(productData.price);
-        console.log("Sending product data:", productData);
+createForm();
+const productForm = document.getElementById('productForm');
+productForm.addEventListener('submit', handleFormSubmit);
 
-        
-        try {
-            const response = await fetch(URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}` 
-                },
-                body: JSON.stringify(productData)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('Product added successfully:', data);
-
-            
-            event.target.reset();
-        } catch (error) {
-            console.error('Error adding product:', error);
-            
-        }
-    };
-
-    
-    const productForm = document.getElementById('productForm');
-    productForm.addEventListener('submit', handleFormSubmit);
-});
