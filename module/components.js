@@ -55,3 +55,31 @@ createForm();
 const productForm = document.getElementById('productForm');
 productForm.addEventListener('submit', handleFormSubmit);
 
+export const createEditForm = (modalBody, item) => {
+    const form = createAndAppendElement(modalBody, 'form', { id: 'editProductForm' });
+
+    
+    createFormGroup(form, 'Name:', 'editProductName', 'text', item.name);
+
+    
+    createFormGroup(form, 'Description:', 'editProductDescription', 'text', item.description);
+
+    
+    createFormGroup(form, 'Brand:', 'editProductBrand', 'text', item.brand);
+
+    
+    createFormGroup(form, 'Image URL:', 'editProductImageUrl', 'text', item.imageUrl);
+
+    
+    createFormGroup(form, 'Price: ($)', 'editProductPrice', 'number', item.price.toString());
+};
+
+const createFormGroup = (form, label, id, type, value) => {
+    const formGroup = createAndAppendElement(form, 'div', { class: 'form-group mb-3' });
+    createAndAppendElement(formGroup, 'label', { for: id }, label);
+    if (type === 'textarea') {
+        createAndAppendElement(formGroup, 'textarea', { class: 'form-control', id: id, value: value });
+    } else {
+        createAndAppendElement(formGroup, 'input', { class: 'form-control', id: id, type: type, value: value });
+    }
+};

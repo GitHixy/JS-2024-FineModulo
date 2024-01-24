@@ -1,4 +1,4 @@
-
+import { createEditForm } from "./components.js";
 export const createAndAppendElement = (parent, elementType, attributes, textContent) => {
     const element = document.createElement(elementType);
     for (const key in attributes) {
@@ -169,8 +169,98 @@ const deleteItem = async (item) => {
     }
 };
 
+
 const editItem = async (item) => {
     console.log('Editing item:', item);
+    const modalContainer = document.getElementById('modalContainer');
+    modalContainer.innerHTML = ''; 
+
+    
+    const modalDiv = createAndAppendElement(modalContainer, 'div', {
+        class: 'modal fade',
+        id: 'editModal',
+        tabindex: '-1',
+        role: 'dialog',
+        'aria-labelledby': 'editModalLabel',
+        'aria-hidden': 'true'
+    });
+
+    const modalDialog = createAndAppendElement(modalDiv, 'div', { class: 'modal-dialog', role: 'document' });
+    const modalContent = createAndAppendElement(modalDialog, 'div', { class: 'modal-content bg-dark text-white' });
+
+    
+    const modalHeader = createAndAppendElement(modalContent, 'div', { class: 'modal-header' });
+    createAndAppendElement(modalHeader, 'h5', { class: 'modal-title', id: 'editModalLabel' }, 'Edit Product');
+    const closeButton = createAndAppendElement(modalHeader, 'button', {
+        type: 'button',
+        class: 'btn-close',
+        'aria-label': 'Close'
+    });
+    closeButton.addEventListener('click', () => {
+        const modalElement = document.getElementById('editModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+    });
+
+    
+    const modalBody = createAndAppendElement(modalContent, 'div', { class: 'modal-body' });
+    createEditForm(modalBody, item);
+    
+
+    
+    const modalFooter = createAndAppendElement(modalContent, 'div', { class: 'modal-footer' });
+    const saveButton = createAndAppendElement(modalFooter, 'button', {
+        type: 'button',
+        class: 'btn btn-primary',
+        'data-dismiss': 'modal'
+    }, 'Save changes');
+
+    saveButton.addEventListener('click', () => {
+        saveProductChanges(item._id);
+        modal.hide();
+    });
+   
+    
+    const modalElement = document.getElementById('editModal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
     
 }
 
+const collectUpdatedProductData = () => {
+    return {
+        name: document.getElementById('editProductName').value,
+        description: document.getElementById('editProductDescription').value,
+        brand: document.getElementById('editProductBrand').value,
+        imageUrl: document.getElementById('editProductImageUrl').value,
+        price: parseFloat(document.getElementById('editProductPrice').value)
+    };
+};
+
+const saveProductChanges = async (productId) => {
+    const updatedProductData = collectUpdatedProductData();
+    const URL = 'https://striveschool-api.herokuapp.com/api/product/';
+    const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFmYzVlZjczMjBjNjAwMThiOGYwMjIiLCJpYXQiOjE3MDYwMTgyODcsImV4cCI6MTcwNzIyNzg4N30.hTBDNVKtRVWz3SuiyDSwgQmp1w7i8wHRKehZa-Pbdyo';
+
+    try {
+        const response = await fetch(`${URL}${productId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(updatedProductData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        alert('Product updated successfully');
+        
+    } catch (error) {
+        console.error('Error updating product:', error);
+        
+    }
+    fetchAndDisplayItems();
+};

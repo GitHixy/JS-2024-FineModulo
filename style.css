@@ -36,3 +36,13 @@ form {
     cursor: pointer;
     font-size: 17px;
 } 
+#editProductForm {
+    width: 80%;
+}
+#editProductForm label {
+    font-weight: bold;
+    text-decoration: underline;
+}
+#editProductForm .form-control {
+    border: 1px solid black;
+}
