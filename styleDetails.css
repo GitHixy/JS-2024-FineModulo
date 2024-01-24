@@ -1,0 +1,17 @@
+.cardElement2 {
+    margin-top: 50px;
+    width: 100%;
+    max-width: 600px;
+}
+.cardElement2:hover {
+    transform: scale(1.02);
+}
+.card-img-top {
+    max-height: 800px;
+    object-fit: cover;
+    cursor: pointer;
+}
+.card h5, .card h6 {
+    cursor: pointer;
+    font-size: 20px;
+} 

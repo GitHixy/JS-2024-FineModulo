@@ -60,7 +60,9 @@ const fetchAndDisplayItems = async () => {
             const detailsButton = document.createElement('button');
             detailsButton.className = 'btn btn-secondary m-1';
             detailsButton.textContent = 'Details';
-            detailsButton.onclick = () => detailsItem(item);
+            detailsButton.onclick = () => {
+                window.location.href = `details.html?id=${item._id}`;
+              };
             
             const editButton = document.createElement('button');
             editButton.className = 'btn btn-primary m-1';
