@@ -1,4 +1,5 @@
-import { createAndAppendElement, handleFormSubmit } from './helper.js';
+import { handleFormSubmit, deleteItem, saveProductChanges } from './fetch.js';
+import { createAndAppendElement, createFormGroup } from './helper.js';
 
 const formContainer = document.getElementById('formContainer');
 const addProductBtn = document.getElementById('addProductBtn');
@@ -22,7 +23,71 @@ export const createNavbar = () => {
 };
 createNavbar();
 
-const createForm = () => {
+export const createCard = (item) => {
+    const cardDiv = document.createElement('div');
+            cardDiv.className = 'card mx-auto mb-3 bg-dark cardElement col-6';
+
+            const cardImg = document.createElement('img');
+            cardImg.className = 'card-img-top mx-auto my-2';
+            cardImg.src = item.imageUrl; 
+            cardImg.alt = item.name;
+        
+            
+        const cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+        
+            
+            const cardTitle = document.createElement('h5');
+            cardTitle.className = 'card-title text-white';
+            cardTitle.textContent = item.name;
+
+            const cardDescription = document.createElement('p');
+            cardDescription.className = 'card-text text-white text-truncate';
+            cardDescription.textContent = item.description;
+
+            const cardBrand = document.createElement('h6');
+            cardBrand.className = 'card-brand text-white';
+            cardBrand.textContent = item.brand;
+
+            const cardPrice = document.createElement('p');
+            cardPrice.className = 'card-text text-white text-truncate';
+            cardPrice.textContent = item.price + ' $';
+        
+            const detailsButton = document.createElement('button');
+            detailsButton.className = 'btn btn-secondary m-1';
+            detailsButton.textContent = 'Details';
+            detailsButton.onclick = () => {
+                window.location.href = `details.html?id=${item._id}`;
+              };
+            
+            const editButton = document.createElement('button');
+            editButton.className = 'btn btn-primary m-1';
+            editButton.textContent = 'Edit';
+            editButton.onclick = () => editItem(item);
+        
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'btn btn-danger m-1';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteItem(item);
+        
+            
+            cardBody.appendChild(cardTitle);
+            cardBody.appendChild(cardDescription);
+            cardBody.appendChild(cardBrand);
+            cardBody.appendChild(cardPrice);
+            cardBody.appendChild(detailsButton);
+            cardBody.appendChild(editButton);
+            cardBody.appendChild(deleteButton);
+        
+            cardDiv.appendChild(cardImg);
+            cardDiv.appendChild(cardBody);
+        
+            
+            itemList.appendChild(cardDiv);
+}
+
+const createForm = async() => {
         const form = createAndAppendElement(formContainer, 'form', {'id': 'productForm'});
 
         const createFormGroup = (labelText, inputType, inputId, placeholder, isTextArea = false) => {
@@ -50,10 +115,7 @@ const createForm = () => {
         const form = formContainer.querySelector('form');
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     });
-
 createForm();
-const productForm = document.getElementById('productForm');
-productForm.addEventListener('submit', handleFormSubmit);
 
 export const createEditForm = (modalBody, item) => {
     const form = createAndAppendElement(modalBody, 'form', { id: 'editProductForm' });
@@ -74,12 +136,59 @@ export const createEditForm = (modalBody, item) => {
     createFormGroup(form, 'Price: ($)', 'editProductPrice', 'number', item.price.toString());
 };
 
-const createFormGroup = (form, label, id, type, value) => {
-    const formGroup = createAndAppendElement(form, 'div', { class: 'form-group mb-3' });
-    createAndAppendElement(formGroup, 'label', { for: id }, label);
-    if (type === 'textarea') {
-        createAndAppendElement(formGroup, 'textarea', { class: 'form-control', id: id, value: value });
-    } else {
-        createAndAppendElement(formGroup, 'input', { class: 'form-control', id: id, type: type, value: value });
-    }
-};
+export const editItem =  (item) => {
+    console.log('Editing item:', item);
+    const modalContainer = document.getElementById('modalContainer');
+    modalContainer.innerHTML = ''; 
+
+    
+    const modalDiv = createAndAppendElement(modalContainer, 'div', {
+        class: 'modal fade',
+        id: 'editModal',
+        tabindex: '-1',
+        role: 'dialog',
+        'aria-labelledby': 'editModalLabel',
+        'aria-hidden': 'true'
+    });
+
+    const modalDialog = createAndAppendElement(modalDiv, 'div', { class: 'modal-dialog', role: 'document' });
+    const modalContent = createAndAppendElement(modalDialog, 'div', { class: 'modal-content bg-dark text-white' });
+
+    
+    const modalHeader = createAndAppendElement(modalContent, 'div', { class: 'modal-header' });
+    createAndAppendElement(modalHeader, 'h5', { class: 'modal-title', id: 'editModalLabel' }, 'Edit Product');
+    const closeButton = createAndAppendElement(modalHeader, 'button', {
+        type: 'button',
+        class: 'btn-close',
+        'aria-label': 'Close'
+    });
+    closeButton.addEventListener('click', () => {
+        const modalElement = document.getElementById('editModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+    });
+
+    
+    const modalBody = createAndAppendElement(modalContent, 'div', { class: 'modal-body' });
+    createEditForm(modalBody, item);
+    
+
+    
+    const modalFooter = createAndAppendElement(modalContent, 'div', { class: 'modal-footer' });
+    const saveButton = createAndAppendElement(modalFooter, 'button', {
+        type: 'button',
+        class: 'btn btn-primary',
+        'data-dismiss': 'modal'
+    }, 'Save changes');
+
+    saveButton.addEventListener('click', () => {
+        saveProductChanges(item._id);
+        modal.hide();
+    });
+   
+    
+    const modalElement = document.getElementById('editModal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+    
+}
