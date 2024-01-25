@@ -1,5 +1,7 @@
 # 'E-Scam.com' - Excercise for Epicode School
 
+**Demo**: [https://githixy.github.io/JS-2024-FineModulo/]
+
 ## Introduction
 E-Scam.com is a dynamic web application designed for showcasing and managing products. It provides functionalities like adding, editing, deleting, and viewing product details.
 
